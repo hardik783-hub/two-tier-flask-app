@@ -1,0 +1,6 @@
+*.pem
+.env
+__pycache__/
+*.pyc
+mysql-data/
+
