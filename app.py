@@ -21,12 +21,12 @@ def wait_for_mysql(retries=10, delay=3):
                 cur = mysql.connection.cursor()
                 cur.execute("SELECT 1")
                 cur.close()
-            print("✅ MySQL is ready")
+            print("â MySQL is ready")
             return
         except Exception as e:
-            print(f"⏳ Waiting for MySQL... ({i+1}/{retries})")
+            print(f"â³ Waiting for MySQL... ({i+1}/{retries})")
             time.sleep(delay)
-    raise Exception("❌ MySQL not available after retries")
+    raise Exception("â MySQL not available after retries")
 
 def init_db():
     with app.app_context():
@@ -61,4 +61,5 @@ if __name__ == "__main__":
     wait_for_mysql()
     init_db()
     app.run(host="0.0.0.0", port=5000)
+
 
