@@ -5,12 +5,13 @@ from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
-# MySQL configuration (FORCE TCP, NO SOCKET)
+# ✅ MySQL configuration (FORCE TCP)
 app.config["MYSQL_HOST"] = os.environ.get("MYSQL_HOST", "mysql")
-app.config["MYSQL_USER"] = os.environ.get("MYSQL_USER", "root")
+app.config["MYSQL_USER"] = os.environ.get("MYSQL_USER", "admin")
 app.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD", "admin")
-app.config["MYSQL_DB"] = os.environ.get("MYSQL_DB", "testdb")
+app.config["MYSQL_DB"] = os.environ.get("MYSQL_DB", "mydb")
 app.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT", 3306))
+app.config["MYSQL_UNIX_SOCKET"] = None
 
 mysql = MySQL(app)
 
@@ -21,12 +22,12 @@ def wait_for_mysql(retries=10, delay=3):
                 cur = mysql.connection.cursor()
                 cur.execute("SELECT 1")
                 cur.close()
-            print("â MySQL is ready")
+            print("MySQL is ready")
             return
-        except Exception as e:
-            print(f"â³ Waiting for MySQL... ({i+1}/{retries})")
+        except Exception:
+            print(f"Waiting for MySQL... ({i+1}/{retries})")
             time.sleep(delay)
-    raise Exception("â MySQL not available after retries")
+    raise Exception("MySQL not available after retries")
 
 def init_db():
     with app.app_context():
@@ -41,7 +42,7 @@ def init_db():
         cur.close()
 
 @app.route("/")
-def hello():
+def index():
     cur = mysql.connection.cursor()
     cur.execute("SELECT message FROM messages")
     messages = cur.fetchall()
@@ -61,5 +62,4 @@ if __name__ == "__main__":
     wait_for_mysql()
     init_db()
     app.run(host="0.0.0.0", port=5000)
-
 
